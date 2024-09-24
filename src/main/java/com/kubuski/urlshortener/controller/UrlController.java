@@ -29,11 +29,7 @@ public class UrlController {
 
     @GetMapping("/{shortUrl}")
     public ResponseEntity<UrlDto> getOriginalUrl(@PathVariable String shortUrl) {
-        return ResponseEntity.ok(urlService.getOriginalUrl(shortUrl).orElseThrow(() -> 
-        {
-            log.error("Short URL not found: " + shortUrl);
-            return new RuntimeException("Url " + shortUrl + " not found");
-        }));
+        return ResponseEntity.ok(urlService.getOriginalUrl(shortUrl));
     }
 
     @DeleteMapping("/{shortUrl}")

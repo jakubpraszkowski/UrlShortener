@@ -12,7 +12,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Service
 @Log4j2
-public class UrlService {
+public class UrlService{
     private final UrlRepository urlRepository;
 
     public UrlService(UrlRepository urlRepository) {
@@ -40,11 +40,12 @@ public class UrlService {
 
         Optional<Url> url = urlRepository.findByShortUrl(shortUrl);
 
-        return urlRepository
-                .orElseThrow(() -> {
-                    log.error("Short URL not found: " + shortUrl);
-                    return new RuntimeException("Url " + shortUrl + " not found");
-                });
+        Url urlEntity = url.orElseThrow(() -> {
+            log.error("Short URL not found: " + shortUrl);
+            return new RuntimeException("Url " + shortUrl + " not found");
+        });
+
+        return convertToDto(urlEntity);
     }
 
     public boolean deleteUrl(String shortUrl) {
