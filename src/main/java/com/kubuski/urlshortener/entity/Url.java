@@ -23,17 +23,20 @@ public class Url {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "original_url")
     private String originalUrl;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, name = "short_url")
     private String shortUrl;
 
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
 
+    @Column(name = "expiration_date")
     private LocalDateTime expirationDate;
 
+    @Column(name = "access_count")
     private int accessCount;
 }
