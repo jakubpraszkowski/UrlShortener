@@ -1,8 +1,6 @@
 services:
-  #new service (java_app)
   java_app:
     container_name: java_app
-    image: francescoxx/java_app:1.0.0
     build: .
     ports:
       - 8080:8080
@@ -13,7 +11,6 @@ services:
     depends_on:
       - java_db
 
-  #old service (postgres)
   java_db:
     container_name: java_db
     image: postgres:12
@@ -22,10 +19,9 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
+      POSTGRES_DB: prod_db
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./initdb:/docker-entrypoint-initdb.d
 
 volumes:
   pgdata: {}

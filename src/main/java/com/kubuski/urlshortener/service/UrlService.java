@@ -19,14 +19,13 @@ public class UrlService{
         this.urlRepository = urlRepository;
     }
 
-    public UrlDto createShortUrl(String originalUrl) {
-        Url url = Url.builder()
-                .originalUrl(originalUrl)
-                .shortUrl(generateShortCode())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .accessCount(0)
-                .build();
+    public UrlDto createShortUrl(UrlDto originalUrl) {
+        Url url = new Url();
+        url.setOriginalUrl(originalUrl.getOriginalUrl());
+        url.setShortUrl(generateShortCode());
+        url.setCreatedAt(LocalDateTime.now());
+        url.setUpdatedAt(LocalDateTime.now());
+        url.setAccessCount(0);
 
         urlRepository.save(url);
 
@@ -35,7 +34,7 @@ public class UrlService{
         return convertToDto(url);
     }
 
-    public UrlDto getOriginalUrl(String shortUrl) {
+    public UrlDto getOriginalUrl(UrlDto shortUrl) {
         log.info("Accessing short URL: " + shortUrl);
 
         Optional<Url> url = urlRepository.findByShortUrl(shortUrl);
@@ -48,7 +47,7 @@ public class UrlService{
         return convertToDto(urlEntity);
     }
 
-    public boolean deleteUrl(String shortUrl) {
+    public boolean deleteUrl(UrlDto shortUrl) {
         Optional<Url> url = urlRepository.findByShortUrl(shortUrl);
 
         if (!url.isPresent()) {
@@ -69,7 +68,7 @@ public class UrlService{
         return shortCode.toString();
     }
 
-    private UrlDto convertToDto(Url url) {
+    public UrlDto convertToDto(Url url) {
         UrlDto urlDto = new UrlDto();
         urlDto.setId(url.getId());
         urlDto.setOriginalUrl(url.getOriginalUrl());
@@ -80,5 +79,17 @@ public class UrlService{
         urlDto.setAccessCount(url.getAccessCount());
 
         return urlDto;
+    }
+
+    public Url convertToEntity(UrlDto urlDto) {
+
+        Url url = new Url();
+
+        url.setOriginalUrl(urlDto.getOriginalUrl());
+
+        url.setShortUrl(urlDto.getShortUrl());
+
+        return url;
+
     }
 }
