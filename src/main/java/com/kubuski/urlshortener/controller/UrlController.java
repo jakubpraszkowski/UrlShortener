@@ -20,28 +20,24 @@ import com.kubuski.urlshortener.service.UrlService;
 public class UrlController {
 
     private final UrlService urlService;
-    private final UrlRepository urlRepository;
 
-    public UrlController(UrlRepository urlRepository, UrlService urlService) {
-        this.urlRepository = urlRepository;
+    public UrlController(UrlService urlService) {
         this.urlService = urlService;
     }
 
     @PostMapping
     public ResponseEntity<UrlDto> createShortUrl(@RequestBody UrlDto urlRequest) {
+        try {
+            
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+        
         return new ResponseEntity<>(urlService.createShortUrl(urlRequest), HttpStatus.CREATED);
     }
 
-    // @PostMapping
-    // public UrlDto createShortUrl(@RequestBody UrlDto urlDto) {
-    //     Url url = urlService.convertToEntity(urlDto);
-    //     Url savedUrl = urlRepository.save(url);
-        
-    //     return urlService.convertToDto(savedUrl);
-    // }
-
     @GetMapping("/{shortUrl}")
-    public ResponseEntity<UrlDto> getOriginalUrl(@PathVariable UrlDto shortUrl) {
+    public ResponseEntity<UrlDto> getOriginalUrl(@PathVariable(name = "shortUrl") UrlDto shortUrl) {
         return ResponseEntity.ok(urlService.getOriginalUrl(shortUrl));
     }
 
