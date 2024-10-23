@@ -10,34 +10,32 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kubuski.urlshortener.dto.UrlDto;
+import com.kubuski.urlshortener.dto.UrlRequest;
+import com.kubuski.urlshortener.dto.UrlResponse;
 import com.kubuski.urlshortener.entity.Url;
 import com.kubuski.urlshortener.repository.UrlRepository;
 import com.kubuski.urlshortener.service.UrlService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/shorten")
 public class UrlController {
 
-    private final UrlService urlService;
+    private UrlService urlService;
 
     public UrlController(UrlService urlService) {
         this.urlService = urlService;
     }
 
     @PostMapping
-    public ResponseEntity<UrlDto> createShortUrl(@RequestBody UrlDto urlRequest) {
-        try {
-            
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
+    public ResponseEntity<UrlResponse> createShortUrl(@Valid @RequestBody UrlRequest urlRequest) {
         
-        return new ResponseEntity<>(urlService.createShortUrl(urlRequest), HttpStatus.CREATED);
+        return new ResponseEntity<>(urlService.createShortUrl(urlRequest.getUrl()), HttpStatus.CREATED);
     }
 
     @GetMapping("/{shortUrl}")
-    public ResponseEntity<UrlDto> getOriginalUrl(@PathVariable(name = "shortUrl") UrlDto shortUrl) {
+    public ResponseEntity<UrlResponse> getOriginalUrl(@PathVariable(name = "shortUrl") UrlRequest shortUrl) {
         return ResponseEntity.ok(urlService.getOriginalUrl(shortUrl));
     }
 

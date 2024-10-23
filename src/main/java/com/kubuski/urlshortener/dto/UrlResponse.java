@@ -1,15 +1,16 @@
 package com.kubuski.urlshortener.dto;
 
-import lombok.Data;
 import java.time.LocalDateTime;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 @Data
-public class UrlDto {
+@AllArgsConstructor
+public class UrlResponse {
     private Long id;
     private String originalUrl;
     private String shortUrl;
     private LocalDateTime createdAt;
-    private LocalDateTime updateAt;
-    private LocalDateTime expirationDate;
-    private int accessCount;
+    private LocalDateTime updatedAt;
 }
