@@ -6,16 +6,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Table(name = "urls")
 @Entity
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Url {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,12 +24,13 @@ public class Url {
     private String shortUrl;
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
-    private LocalDateTime updatedAt;
+    @Column(name = "updated_at")
+    private Instant updatedAt;
 
     @Column(name = "expiration_date")
-    private LocalDateTime expirationDate;
+    private Instant expirationDate;
 
     @Column(name = "access_count")
     private int accessCount;
