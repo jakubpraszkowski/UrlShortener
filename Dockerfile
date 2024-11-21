@@ -19,9 +19,9 @@ WORKDIR /app
 ARG APP_USER=appuser
 ARG APP_USER_GROUP=appgroup
 
-COPY --from=builder /build/target/*.jar app.jar
+RUN groupadd -r ${APP_USER_GROUP} && useradd -r -g ${APP_USER_GROUP} ${APP_USER}
 
-COPY --from=builder /build/src/main/resources /build/src/main/
+COPY --from=builder /build/target/*.jar app.jar
 
 RUN chown -R ${APP_USER}:${APP_USER_GROUP} /app
 
@@ -29,4 +29,4 @@ USER ${APP_USER}
 
 EXPOSE 8080
 
-ENTRYPOINT [ "sh", "-c", "java -jar app.jar"]
+ENTRYPOINT [ "sh", "-c", "java -jar app.jar" ]

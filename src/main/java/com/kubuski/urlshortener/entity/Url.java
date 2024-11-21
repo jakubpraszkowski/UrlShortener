@@ -9,6 +9,9 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import java.time.Instant;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+
 @Table(name = "urls")
 @Entity
 @Data
@@ -23,10 +26,12 @@ public class Url {
     @Column(unique = true, nullable = false, name = "short_url")
     private String shortUrl;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", updatable = false)
+    @CreatedDate
     private Instant createdAt;
 
     @Column(name = "updated_at")
+    @LastModifiedDate
     private Instant updatedAt;
 
     @Column(name = "expiration_date")
@@ -34,4 +39,7 @@ public class Url {
 
     @Column(name = "access_count")
     private int accessCount;
+
+    @Column(name = "deleted")
+    private boolean deleted;
 }
