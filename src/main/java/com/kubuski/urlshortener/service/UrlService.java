@@ -2,16 +2,14 @@ package com.kubuski.urlshortener.service;
 
 import org.springframework.stereotype.Service;
 
-import com.kubuski.urlshortener.dto.UrlDto;
+import com.kubuski.urlshortener.dto.UrlRequest;
+import com.kubuski.urlshortener.dto.UrlResponse;
 import com.kubuski.urlshortener.entity.Url;
+import com.kubuski.urlshortener.exceptions.ResourceNotFoundException;
 import com.kubuski.urlshortener.repository.UrlRepository;
-import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.Random;
-import lombok.extern.log4j.Log4j2;
+import java.time.Instant;
 
 @Service
-@Log4j2
 public class UrlService{
     private final UrlRepository urlRepository;
 
@@ -19,77 +17,76 @@ public class UrlService{
         this.urlRepository = urlRepository;
     }
 
-    public UrlDto createShortUrl(UrlDto originalUrl) {
+    public UrlResponse createShortUrl(UrlRequest originalUrl) {
         Url url = new Url();
-        url.setOriginalUrl(originalUrl.getOriginalUrl());
+        url.setOriginalUrl(originalUrl.toString());
         url.setShortUrl(generateShortCode());
-        url.setCreatedAt(LocalDateTime.now());
-        url.setUpdatedAt(LocalDateTime.now());
+        url.setCreatedAt(Instant.now());
+        url.setUpdatedAt(Instant.now());
+        url.setExpirationDate(null);
         url.setAccessCount(0);
 
-        urlRepository.save(url);
+        Url savedUrl = urlRepository.save(url);
 
-        log.info(originalUrl + " shortened to " + url.getShortUrl());
-
-        return convertToDto(url);
+        return new UrlResponse(
+            savedUrl.getId(),
+            savedUrl.getOriginalUrl(),
+            savedUrl.getShortUrl(),
+            savedUrl.getCreatedAt(),
+            savedUrl.getUpdatedAt(),
+            savedUrl.getExpirationDate(),
+            savedUrl.getAccessCount()
+        );
     }
 
-    public UrlDto getOriginalUrl(UrlDto shortUrl) {
-        log.info("Accessing short URL: " + shortUrl);
+    public UrlResponse getOriginalUrl(String shortUrl) {
+        Url url = urlRepository.findByShortUrl(shortUrl).orElseThrow(() -> new ResourceNotFoundException("URL not found: " + shortUrl));
 
-        Optional<Url> url = urlRepository.findByShortUrl(shortUrl);
+        url.setAccessCount(url.getAccessCount() + 1);
 
-        Url urlEntity = url.orElseThrow(() -> {
-            log.error("Short URL not found: " + shortUrl);
-            return new RuntimeException("Url " + shortUrl + " not found");
-        });
+        Url updatedUrl = urlRepository.save(url);
 
-        return convertToDto(urlEntity);
+        return new UrlResponse(
+            updatedUrl.getId(),
+            updatedUrl.getOriginalUrl(),
+            updatedUrl.getShortUrl(),
+            updatedUrl.getCreatedAt(),
+            updatedUrl.getUpdatedAt(),
+            updatedUrl.getExpirationDate(),
+            updatedUrl.getAccessCount()
+        );
     }
 
-    public boolean deleteUrl(UrlDto shortUrl) {
-        Optional<Url> url = urlRepository.findByShortUrl(shortUrl);
+    public UrlResponse updateOriginalUrl(String shortUrl, UrlRequest urlRequest) {
+        Url url = urlRepository.findByShortUrl(shortUrl).orElseThrow(() -> new ResourceNotFoundException("URL not found: " + shortUrl));
 
-        if (!url.isPresent()) {
-            return false;
-        }
+        url.setAccessCount(0);
+        url.setUpdatedAt(Instant.now());
+        url.setOriginalUrl(urlRequest.getOriginalUrl());
 
-        urlRepository.delete(url.get());
-        return true;
+        Url updatedUrl = urlRepository.save(url);
+
+        return new UrlResponse(
+            updatedUrl.getId(),
+            updatedUrl.getOriginalUrl(),
+            updatedUrl.getShortUrl(),
+            updatedUrl.getCreatedAt(),
+            updatedUrl.getUpdatedAt(),
+            updatedUrl.getExpirationDate(),
+            updatedUrl.getAccessCount()
+        );
+    }
+
+    public UrlResponse deleteUrl(String shortUrl) {
+
+    }
+
+    public UrlResponse getUrlStats(String shortUrl) {
+
     }
 
     private String generateShortCode() {
-        Random random = new Random();
-
-        StringBuilder shortCode = new StringBuilder();
-        for (int i = 0; i < 6; i++) {
-            shortCode.append((char) (random.nextInt(26) + 'a'));
-        }
-        return shortCode.toString();
+        return java.util.UUID.randomUUID().toString().substring(0, 6);
     }
 
-    public UrlDto convertToDto(Url url) {
-        UrlDto urlDto = new UrlDto();
-        urlDto.setId(url.getId());
-        urlDto.setOriginalUrl(url.getOriginalUrl());
-        urlDto.setShortUrl(url.getShortUrl());
-        urlDto.setCreatedAt(url.getCreatedAt());
-        urlDto.setUpdateAt(url.getUpdatedAt());
-        urlDto.setExpirationDate(url.getExpirationDate());
-        urlDto.setAccessCount(url.getAccessCount());
-
-        return urlDto;
-    }
-
-    public Url convertToEntity(UrlDto urlDto) {
-
-        Url url = new Url();
-
-        url.setOriginalUrl(urlDto.getOriginalUrl());
-
-        url.setShortUrl(urlDto.getShortUrl());
-
-        return url;
-
-    }
 }

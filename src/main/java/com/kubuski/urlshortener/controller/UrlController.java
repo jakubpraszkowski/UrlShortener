@@ -1,23 +1,25 @@
 package com.kubuski.urlshortener.controller;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kubuski.urlshortener.dto.UrlDto;
-import com.kubuski.urlshortener.entity.Url;
-import com.kubuski.urlshortener.repository.UrlRepository;
+import com.kubuski.urlshortener.dto.UrlRequest;
+import com.kubuski.urlshortener.dto.UrlResponse;
 import com.kubuski.urlshortener.service.UrlService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/shorten")
-public class UrlController {
+final class UrlController {
 
     private final UrlService urlService;
 
@@ -25,33 +27,33 @@ public class UrlController {
         this.urlService = urlService;
     }
 
-    @PostMapping
-    public ResponseEntity<UrlDto> createShortUrl(@RequestBody UrlDto urlRequest) {
-        try {
-            
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
-        
-        return new ResponseEntity<>(urlService.createShortUrl(urlRequest), HttpStatus.CREATED);
+    @PostMapping()
+    @ResponseStatus(HttpStatus.CREATED)
+    public UrlResponse createShortUrl(@Valid @RequestBody UrlRequest urlRequest) {
+        return urlService.createShortUrl(urlRequest);
     }
 
     @GetMapping("/{shortUrl}")
-    public ResponseEntity<UrlDto> getOriginalUrl(@PathVariable(name = "shortUrl") UrlDto shortUrl) {
-        return ResponseEntity.ok(urlService.getOriginalUrl(shortUrl));
+    @ResponseStatus(HttpStatus.OK)
+    public UrlResponse getOriginalUrl(@PathVariable(name = "shortUrl") String shortUrl) {
+        return urlService.getOriginalUrl(shortUrl);
+    } 
+
+    @PutMapping("/{shortUrl}")
+    @ResponseStatus(HttpStatus.OK)
+    public UrlResponse updateOriginalUrl(@PathVariable(name = "shortUrl") String shortUrl, @RequestBody UrlRequest urlRequest) {
+        return urlService.updateOriginalUrl(shortUrl, urlRequest);
     }
 
     @DeleteMapping("/{shortUrl}")
-    public ResponseEntity<UrlDto> deleteUrl(@PathVariable UrlDto shortUrl) {
-        if (!urlService.deleteUrl(shortUrl)) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok().build();
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUrl(@PathVariable(name = "shortUrl") String shortUrl) {
+        urlService.deleteUrl(shortUrl);
     }
 
-    @GetMapping("/health")
-    public ResponseEntity<String> healthCheck() {
-        return ResponseEntity.ok("Application is running");
+    @GetMapping("/{shortUrl}/stats")
+    @ResponseStatus(HttpStatus.OK)
+    public UrlResponse getUrlStats(@PathVariable(name = "shortUrl") String shortUrl) {
+        return urlService.getUrlStats(shortUrl);
     }
 }
