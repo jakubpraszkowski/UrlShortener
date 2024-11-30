@@ -15,12 +15,14 @@ import com.kubuski.urlshortener.job.UrlCleanupJob;
 public class QuartzConfig {
     @Bean
     public JobDetail urlCleanupJobDetail() {
-        return JobBuilder.newJob(UrlCleanupJob.class).withIdentity("urlCleanupJob").storeDurably().build();
+        return JobBuilder.newJob(UrlCleanupJob.class).withIdentity("urlCleanupJob").storeDurably()
+                .build();
     }
 
     @Bean
     public Trigger urlCleanupJobTrigger() {
-        return TriggerBuilder.newTrigger().forJob(urlCleanupJobDetail()).withIdentity("urlCleanupTrigger")
+        return TriggerBuilder.newTrigger().forJob(urlCleanupJobDetail())
+                .withIdentity("urlCleanupTrigger")
                 .withSchedule(CronScheduleBuilder.cronSchedule("0 0 0 * * ?")).build();
     }
 

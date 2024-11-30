@@ -8,8 +8,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @SpringBootApplication
 public class UrlshortenerApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(UrlshortenerApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(UrlshortenerApplication.class, args);
+    }
 }

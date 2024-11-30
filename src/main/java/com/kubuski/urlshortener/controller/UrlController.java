@@ -16,16 +16,14 @@ import com.kubuski.urlshortener.dto.UrlResponse;
 import com.kubuski.urlshortener.service.UrlService;
 
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 
 @RestController
-@RequestMapping("/api/shorten")
+@AllArgsConstructor
+@RequestMapping("/api/v1/shorten")
 final class UrlController {
 
     private final UrlService urlService;
-
-    public UrlController(UrlService urlService) {
-        this.urlService = urlService;
-    }
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
