@@ -11,13 +11,14 @@ import org.springframework.stereotype.Component;
 import com.kubuski.urlshortener.entity.Url;
 import com.kubuski.urlshortener.repository.UrlRepository;
 
-import lombok.AllArgsConstructor;
-
 @Component
-@AllArgsConstructor
 public class UrlCleanupJob extends QuartzJobBean {
     private final UrlRepository urlRepository;
     private final int ENTITY_LIFETIME_DAYS = 5;
+
+    public UrlCleanupJob(UrlRepository urlRepository) {
+        this.urlRepository = urlRepository;
+    }
 
     @Override
     protected void executeInternal(JobExecutionContext context) {

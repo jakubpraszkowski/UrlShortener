@@ -13,6 +13,7 @@ import com.kubuski.urlshortener.job.UrlCleanupJob;
 
 @Configuration
 public class QuartzConfig {
+
     @Bean
     public JobDetail urlCleanupJobDetail() {
         return JobBuilder.newJob(UrlCleanupJob.class).withIdentity("urlCleanupJob").storeDurably()

@@ -16,10 +16,10 @@ import com.kubuski.urlshortener.dto.UrlResponse;
 import com.kubuski.urlshortener.service.UrlService;
 
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/shorten")
 final class UrlController {
 

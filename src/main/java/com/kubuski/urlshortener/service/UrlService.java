@@ -6,14 +6,16 @@ import com.kubuski.urlshortener.entity.Url;
 import com.kubuski.urlshortener.exception.UrlIsNullException;
 import com.kubuski.urlshortener.exception.UrlNotFoundException;
 import com.kubuski.urlshortener.repository.UrlRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UrlService {
+
     private final UrlRepository urlRepository;
 
     public UrlResponse createShortUrl(UrlRequest originalUrl) {
@@ -21,22 +23,20 @@ public class UrlService {
         Url url = Url.builder().originalUrl(originalUrl.url()).shortUrl(generateShortCode())
                 .expirationDate(null).accessCount(0).deleted(false).build();
 
-        Url savedUrl = urlRepository.save(url);
-
-        return toUrlResponse(savedUrl);
+        return toUrlResponse(urlRepository.save(url));
     }
 
+    @Transactional
     public UrlResponse getOriginalUrl(String shortUrl) {
         Url url = urlRepository.findByShortUrlAndDeletedFalse(shortUrl)
                 .orElseThrow(() -> new UrlNotFoundException("URL not found: " + shortUrl));
 
         url.setAccessCount(url.getAccessCount() + 1);
 
-        Url updatedUrl = urlRepository.save(url);
-
-        return toUrlResponse(updatedUrl);
+        return toUrlResponse(url);
     }
 
+    @Transactional
     public UrlResponse updateOriginalUrl(String shortUrl, UrlRequest urlRequest) {
         Url url = urlRepository.findByShortUrlAndDeletedFalse(shortUrl)
                 .orElseThrow(() -> new UrlNotFoundException("URL not found: " + shortUrl));
@@ -44,17 +44,15 @@ public class UrlService {
         url.setAccessCount(0);
         url.setOriginalUrl(urlRequest.url());
 
-        Url updatedUrl = urlRepository.save(url);
-
-        return toUrlResponse(updatedUrl);
+        return toUrlResponse(url);
     }
 
+    @Transactional
     public void deleteUrl(String shortUrl) {
         Url url = urlRepository.findByShortUrlAndDeletedFalse(shortUrl)
                 .orElseThrow(() -> new UrlNotFoundException("URL not found: " + shortUrl));
 
         url.setDeleted(true);
-        urlRepository.save(url);
     }
 
     public UrlResponse getUrlStats(String shortUrl) {
@@ -64,7 +62,7 @@ public class UrlService {
         return toUrlResponse(url);
     }
 
-    private String generateShortCode() {
+    public String generateShortCode() {
         return UUID.randomUUID().toString().substring(0, 8);
     }
 
