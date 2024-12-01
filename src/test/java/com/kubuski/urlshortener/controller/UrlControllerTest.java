@@ -1,5 +1,6 @@
 package com.kubuski.urlshortener.controller;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -19,71 +20,73 @@ import com.kubuski.urlshortener.service.UrlService;
 @ExtendWith(MockitoExtension.class)
 public class UrlControllerTest {
 
+    private static final String SHORT_URL = "shortUrl";
+    private static final String ORIGINAL_URL = "https://example.com";
+    private static final String NEW_URL = "https://newexample.com";
+
     @Mock
     private UrlService urlService;
 
     @InjectMocks
     private UrlController urlController;
 
+    private UrlRequest urlRequest;
     private UrlResponse urlResponse;
 
     @BeforeEach
     public void setUp() {
-        urlResponse = new UrlResponse(1L, "https://example.com", "shortUrl", null, null, null, 0);
+        urlResponse = new UrlResponse(1L, ORIGINAL_URL, SHORT_URL, null, null, null, 0);
+        urlRequest = new UrlRequest(ORIGINAL_URL);
     }
 
     @Test
     public void testCreateShortUrl() {
-        UrlRequest urlRequest = new UrlRequest("https://example.com");
         when(urlService.createShortUrl(any(UrlRequest.class))).thenReturn(urlResponse);
 
         UrlResponse response = urlController.createShortUrl(urlRequest);
 
-        assertEquals(urlRequest.url(), response.originalUrl());
-        assertEquals(urlResponse.shortUrl(), response.shortUrl());
+        assertAll(() -> assertEquals(urlRequest.url(), response.originalUrl()),
+                () -> assertEquals(urlResponse.shortUrl(), response.shortUrl()));
     }
 
     @Test
     public void testGetOriginalUrl() {
-        String shortUrl = "shortUrl";
         when(urlService.getOriginalUrl(anyString())).thenReturn(urlResponse);
 
-        UrlResponse response = urlController.getOriginalUrl(shortUrl);
+        UrlResponse response = urlController.getOriginalUrl(SHORT_URL);
 
-        assertEquals(urlResponse.originalUrl(), response.originalUrl());
-        assertEquals(urlResponse.shortUrl(), response.shortUrl());
+        assertAll(() -> assertEquals(urlResponse.originalUrl(), response.originalUrl()),
+                () -> assertEquals(urlResponse.shortUrl(), response.shortUrl()));
     }
 
     @Test
     public void testUpdateOriginalUrl() {
-        UrlRequest urlRequest = new UrlRequest("https://newexample.com");
+        UrlRequest newUrlRequest = new UrlRequest(NEW_URL);
         UrlResponse updatedUrlResponse =
-                new UrlResponse(1L, "https://newexample.com", "shortUrl", null, null, null, 0);
+                new UrlResponse(1L, NEW_URL, SHORT_URL, null, null, null, 0);
         when(urlService.updateOriginalUrl(any(String.class), any(UrlRequest.class)))
                 .thenReturn(updatedUrlResponse);
 
-        UrlResponse response = urlController.updateOriginalUrl("shortUrl", urlRequest);
+        UrlResponse response = urlController.updateOriginalUrl(SHORT_URL, newUrlRequest);
 
-        assertEquals(updatedUrlResponse.shortUrl(), response.shortUrl());
-        assertEquals(urlRequest.url(), response.originalUrl());
+        assertAll(() -> assertEquals(updatedUrlResponse.shortUrl(), response.shortUrl()),
+                () -> assertEquals(newUrlRequest.url(), response.originalUrl()));
     }
 
     @Test
     public void testDeleteUrl() {
-        String shortUrl = "shortUrl";
-        doNothing().when(urlService).deleteUrl(shortUrl);
+        doNothing().when(urlService).deleteUrl(SHORT_URL);
 
-        urlController.deleteUrl(shortUrl);
+        urlController.deleteUrl(SHORT_URL);
     }
 
     @Test
     public void testGetStatsUrl() {
-        String shortUrl = "shortUrl";
-        when(urlService.getUrlStats(shortUrl)).thenReturn(urlResponse);
+        when(urlService.getUrlStats(SHORT_URL)).thenReturn(urlResponse);
 
-        UrlResponse response = urlController.getUrlStats(shortUrl);
+        UrlResponse response = urlController.getUrlStats(SHORT_URL);
 
-        assertEquals(urlResponse.originalUrl(), response.originalUrl());
-        assertEquals(urlResponse.shortUrl(), response.shortUrl());
+        assertAll(() -> assertEquals(urlResponse.originalUrl(), response.originalUrl()),
+                () -> assertEquals(urlResponse.shortUrl(), response.shortUrl()));
     }
 }

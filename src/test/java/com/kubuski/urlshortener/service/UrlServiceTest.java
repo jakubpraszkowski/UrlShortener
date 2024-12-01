@@ -1,9 +1,10 @@
 package com.kubuski.urlshortener.service;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -24,9 +25,11 @@ import com.kubuski.urlshortener.exception.UrlNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 class UrlServiceTest {
-    private static final int SHORT_URL_LENGTH = 8;
 
+    private static final int SHORT_URL_LENGTH = 8;
     private static final String SHORT_URL = "shortUrl";
+    private static final String ORIGINAL_URL = "https://example.com";
+    private static final String NEW_ORIGINAL_URL = "https://newexample.com";
 
     @Mock
     private UrlRepository urlRepository;
@@ -38,20 +41,20 @@ class UrlServiceTest {
 
     @BeforeEach
     public void setUp() {
-        url = Url.builder().id(1L).originalUrl("https://example.com").shortUrl(SHORT_URL)
-                .accessCount(0).deleted(false).build();
+        url = Url.builder().id(1L).originalUrl(ORIGINAL_URL).shortUrl(SHORT_URL).accessCount(0)
+                .deleted(false).build();
     }
 
     @Test
     void testCreateShortUrl() {
-        UrlRequest urlRequest = new UrlRequest("https://example.com");
+        UrlRequest urlRequest = new UrlRequest(ORIGINAL_URL);
         when(urlRepository.save(any(Url.class))).thenReturn(url);
-        
+
         UrlResponse response = urlService.createShortUrl(urlRequest);
 
-        assertEquals(urlRequest.url(), response.originalUrl());
-        assertNotNull(response.shortUrl());
-        assertTrue(response.shortUrl().length() == SHORT_URL_LENGTH);
+        assertAll("Create Short URL", () -> assertEquals(urlRequest.url(), response.originalUrl()),
+                () -> assertNotNull(response.shortUrl()),
+                () -> assertEquals(SHORT_URL_LENGTH, response.shortUrl().length()));
     }
 
     @Test
@@ -60,9 +63,10 @@ class UrlServiceTest {
 
         UrlResponse response = urlService.getOriginalUrl(SHORT_URL);
 
-        assertEquals(url.getOriginalUrl(), response.originalUrl());
-        assertEquals(url.getShortUrl(), response.shortUrl());
-        assertEquals(url.getAccessCount(), response.accessCount());
+        assertAll("Get Original URL",
+                () -> assertEquals(url.getOriginalUrl(), response.originalUrl()),
+                () -> assertEquals(url.getShortUrl(), response.shortUrl()),
+                () -> assertEquals(url.getAccessCount(), response.accessCount()));
     }
 
     @Test
@@ -74,18 +78,19 @@ class UrlServiceTest {
 
     @Test
     void testUpdateOriginalUrl() {
-        UrlRequest urlRequest = new UrlRequest("https://newexample.com");
+        UrlRequest urlRequest = new UrlRequest(NEW_ORIGINAL_URL);
         when(urlRepository.findByShortUrlAndDeletedFalse(anyString())).thenReturn(Optional.of(url));
 
         UrlResponse response = urlService.updateOriginalUrl(SHORT_URL, urlRequest);
 
-        assertEquals(urlRequest.url(), response.originalUrl());
-        assertEquals(url.getShortUrl(), response.shortUrl());
+        assertAll("Update Original URL",
+                () -> assertEquals(urlRequest.url(), response.originalUrl()),
+                () -> assertEquals(url.getShortUrl(), response.shortUrl()));
     }
 
     @Test
     void testUpdateOriginalUrlNotFound() {
-        UrlRequest urlRequest = new UrlRequest("https://newexample.com");
+        UrlRequest urlRequest = new UrlRequest(NEW_ORIGINAL_URL);
         when(urlRepository.findByShortUrlAndDeletedFalse(anyString())).thenReturn(Optional.empty());
 
         assertThrows(UrlNotFoundException.class,
@@ -98,7 +103,7 @@ class UrlServiceTest {
 
         urlService.deleteUrl(SHORT_URL);
 
-        assertEquals(true, url.isDeleted());
+        assertTrue(url.isDeleted());
     }
 
     @Test
@@ -114,8 +119,8 @@ class UrlServiceTest {
 
         UrlResponse response = urlService.getUrlStats(SHORT_URL);
 
-        assertEquals(url.getOriginalUrl(), response.originalUrl());
-        assertEquals(url.getShortUrl(), response.shortUrl());
+        assertAll("Get URL Stats", () -> assertEquals(url.getOriginalUrl(), response.originalUrl()),
+                () -> assertEquals(url.getShortUrl(), response.shortUrl()));
     }
 
     @Test
