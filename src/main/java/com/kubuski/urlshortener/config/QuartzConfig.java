@@ -14,6 +14,8 @@ import com.kubuski.urlshortener.job.UrlCleanupJob;
 @Configuration
 public class QuartzConfig {
 
+    private static final String CRON_EXPRESSION = "0 0 0 * * ?";
+
     @Bean
     public JobDetail urlCleanupJobDetail() {
         return JobBuilder.newJob(UrlCleanupJob.class).withIdentity("urlCleanupJob").storeDurably()
@@ -24,7 +26,7 @@ public class QuartzConfig {
     public Trigger urlCleanupJobTrigger() {
         return TriggerBuilder.newTrigger().forJob(urlCleanupJobDetail())
                 .withIdentity("urlCleanupTrigger")
-                .withSchedule(CronScheduleBuilder.cronSchedule("0 0 0 * * ?")).build();
+                .withSchedule(CronScheduleBuilder.cronSchedule(CRON_EXPRESSION)).build();
     }
 
     @Bean

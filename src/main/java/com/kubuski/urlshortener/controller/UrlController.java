@@ -25,7 +25,7 @@ final class UrlController {
 
     private final UrlService urlService;
 
-    @PostMapping()
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UrlResponse createShortUrl(@Valid @RequestBody UrlRequest urlRequest) {
         return urlService.createShortUrl(urlRequest);
@@ -33,26 +33,26 @@ final class UrlController {
 
     @GetMapping("/{shortUrl}")
     @ResponseStatus(HttpStatus.OK)
-    public UrlResponse getOriginalUrl(@PathVariable(name = "shortUrl") String shortUrl) {
+    public UrlResponse getOriginalUrl(@PathVariable String shortUrl) {
         return urlService.getOriginalUrl(shortUrl);
     }
 
     @PutMapping("/{shortUrl}")
     @ResponseStatus(HttpStatus.OK)
-    public UrlResponse updateOriginalUrl(@PathVariable(name = "shortUrl") String shortUrl,
+    public UrlResponse updateOriginalUrl(@PathVariable String shortUrl,
             @RequestBody UrlRequest urlRequest) {
         return urlService.updateOriginalUrl(shortUrl, urlRequest);
     }
 
     @DeleteMapping("/{shortUrl}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUrl(@PathVariable(name = "shortUrl") String shortUrl) {
+    public void deleteUrl(@PathVariable String shortUrl) {
         urlService.deleteUrl(shortUrl);
     }
 
     @GetMapping("/{shortUrl}/stats")
     @ResponseStatus(HttpStatus.OK)
-    public UrlResponse getUrlStats(@PathVariable(name = "shortUrl") String shortUrl) {
+    public UrlResponse getUrlStats(@PathVariable String shortUrl) {
         return urlService.getUrlStats(shortUrl);
     }
 }

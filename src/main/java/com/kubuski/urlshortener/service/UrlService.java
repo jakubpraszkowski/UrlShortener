@@ -18,6 +18,7 @@ public class UrlService {
 
     private final UrlRepository urlRepository;
 
+    @Transactional
     public UrlResponse createShortUrl(UrlRequest originalUrl) {
 
         Url url = Url.builder().originalUrl(originalUrl.url()).shortUrl(generateShortCode())
@@ -55,6 +56,7 @@ public class UrlService {
         url.setDeleted(true);
     }
 
+    @Transactional(readOnly = true)
     public UrlResponse getUrlStats(String shortUrl) {
         Url url = urlRepository.findByShortUrlAndDeletedFalse(shortUrl)
                 .orElseThrow(() -> new UrlNotFoundException("URL not found: " + shortUrl));
