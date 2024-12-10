@@ -1,29 +1,28 @@
 package com.kubuski.urlshortener.controller;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-import com.kubuski.urlshortener.dto.UserDto;
-import com.kubuski.urlshortener.entity.User;
+import com.kubuski.urlshortener.dto.UserRequest;
+import com.kubuski.urlshortener.dto.UserResponse;
 import com.kubuski.urlshortener.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
 final class UserController {
+
     private final UserService userService;
+
+    @GetMapping("/{email}")
+    @ResponseStatus(HttpStatus.OK)
+    public UserResponse getUserByEmail(@PathVariable String email) {
+        return userService.findByEmail(email);
+    }
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto registerUser(@RequestBody UserDto userDto) {
-
-    }
-
-    private UserDto toUserDto(User user) {
-        return new UserDto(user.getId(), user.getUsername(), user.getPassword(), user.getRole());
+    public UserResponse registerUser(@RequestBody UserRequest userRequest) {
+        return userService.registerUser(userRequest);
     }
 }

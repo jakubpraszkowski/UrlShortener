@@ -35,39 +35,39 @@ public class UrlControllerTest {
 
     @BeforeEach
     public void setUp() {
-        urlResponse = new UrlResponse(1L, ORIGINAL_URL, SHORT_URL, null, null, null, 0);
-        urlRequest = new UrlRequest(ORIGINAL_URL);
+        this.urlResponse = new UrlResponse(1L, UrlControllerTest.ORIGINAL_URL, UrlControllerTest.SHORT_URL, null, null, null, 0);
+        this.urlRequest = new UrlRequest(UrlControllerTest.ORIGINAL_URL);
     }
 
     @Test
     public void testCreateShortUrl() {
-        when(urlService.createShortUrl(any(UrlRequest.class))).thenReturn(urlResponse);
+        when(this.urlService.createShortUrl(any(UrlRequest.class))).thenReturn(this.urlResponse);
 
-        UrlResponse response = urlController.createShortUrl(urlRequest);
+        final UrlResponse response = this.urlController.createShortUrl(this.urlRequest);
 
-        assertAll(() -> assertEquals(urlRequest.url(), response.originalUrl()),
-                () -> assertEquals(urlResponse.shortUrl(), response.shortUrl()));
+        assertAll(() -> assertEquals(this.urlRequest.url(), response.originalUrl()),
+                () -> assertEquals(this.urlResponse.shortUrl(), response.shortUrl()));
     }
 
     @Test
     public void testGetOriginalUrl() {
-        when(urlService.getOriginalUrl(anyString())).thenReturn(urlResponse);
+        when(this.urlService.getOriginalUrl(anyString())).thenReturn(this.urlResponse);
 
-        UrlResponse response = urlController.getOriginalUrl(SHORT_URL);
+        final UrlResponse response = this.urlController.getOriginalUrl(UrlControllerTest.SHORT_URL);
 
-        assertAll(() -> assertEquals(urlResponse.originalUrl(), response.originalUrl()),
-                () -> assertEquals(urlResponse.shortUrl(), response.shortUrl()));
+        assertAll(() -> assertEquals(this.urlResponse.originalUrl(), response.originalUrl()),
+                () -> assertEquals(this.urlResponse.shortUrl(), response.shortUrl()));
     }
 
     @Test
     public void testUpdateOriginalUrl() {
-        UrlRequest newUrlRequest = new UrlRequest(NEW_URL);
-        UrlResponse updatedUrlResponse =
-                new UrlResponse(1L, NEW_URL, SHORT_URL, null, null, null, 0);
-        when(urlService.updateOriginalUrl(any(String.class), any(UrlRequest.class)))
+        final UrlRequest newUrlRequest = new UrlRequest(UrlControllerTest.NEW_URL);
+        final UrlResponse updatedUrlResponse =
+                new UrlResponse(1L, UrlControllerTest.NEW_URL, UrlControllerTest.SHORT_URL, null, null, null, 0);
+        when(this.urlService.updateOriginalUrl(any(String.class), any(UrlRequest.class)))
                 .thenReturn(updatedUrlResponse);
 
-        UrlResponse response = urlController.updateOriginalUrl(SHORT_URL, newUrlRequest);
+        final UrlResponse response = this.urlController.updateOriginalUrl(UrlControllerTest.SHORT_URL, newUrlRequest);
 
         assertAll(() -> assertEquals(updatedUrlResponse.shortUrl(), response.shortUrl()),
                 () -> assertEquals(newUrlRequest.url(), response.originalUrl()));
@@ -75,18 +75,18 @@ public class UrlControllerTest {
 
     @Test
     public void testDeleteUrl() {
-        doNothing().when(urlService).deleteUrl(SHORT_URL);
+        doNothing().when(this.urlService).deleteUrl(UrlControllerTest.SHORT_URL);
 
-        urlController.deleteUrl(SHORT_URL);
+        this.urlController.deleteUrl(UrlControllerTest.SHORT_URL);
     }
 
     @Test
     public void testGetStatsUrl() {
-        when(urlService.getUrlStats(SHORT_URL)).thenReturn(urlResponse);
+        when(this.urlService.getUrlStats(UrlControllerTest.SHORT_URL)).thenReturn(this.urlResponse);
 
-        UrlResponse response = urlController.getUrlStats(SHORT_URL);
+        final UrlResponse response = this.urlController.getUrlStats(UrlControllerTest.SHORT_URL);
 
-        assertAll(() -> assertEquals(urlResponse.originalUrl(), response.originalUrl()),
-                () -> assertEquals(urlResponse.shortUrl(), response.shortUrl()));
+        assertAll(() -> assertEquals(this.urlResponse.originalUrl(), response.originalUrl()),
+                () -> assertEquals(this.urlResponse.shortUrl(), response.shortUrl()));
     }
 }

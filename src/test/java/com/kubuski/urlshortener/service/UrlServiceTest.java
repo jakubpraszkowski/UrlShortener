@@ -41,92 +41,92 @@ class UrlServiceTest {
 
     @BeforeEach
     public void setUp() {
-        url = Url.builder().id(1L).originalUrl(ORIGINAL_URL).shortUrl(SHORT_URL).accessCount(0)
+        this.url = Url.builder().id(1L).originalUrl(UrlServiceTest.ORIGINAL_URL).shortUrl(UrlServiceTest.SHORT_URL).accessCount(0)
                 .deleted(false).build();
     }
 
     @Test
     void testCreateShortUrl() {
-        UrlRequest urlRequest = new UrlRequest(ORIGINAL_URL);
-        when(urlRepository.save(any(Url.class))).thenReturn(url);
+        final UrlRequest urlRequest = new UrlRequest(UrlServiceTest.ORIGINAL_URL);
+        when(this.urlRepository.save(any(Url.class))).thenReturn(this.url);
 
-        UrlResponse response = urlService.createShortUrl(urlRequest);
+        final UrlResponse response = this.urlService.createShortUrl(urlRequest);
 
         assertAll("Create Short URL", () -> assertEquals(urlRequest.url(), response.originalUrl()),
                 () -> assertNotNull(response.shortUrl()),
-                () -> assertEquals(SHORT_URL_LENGTH, response.shortUrl().length()));
+                () -> assertEquals(UrlServiceTest.SHORT_URL_LENGTH, response.shortUrl().length()));
     }
 
     @Test
     void testGetOriginalUrl() {
-        when(urlRepository.findByShortUrlAndDeletedFalse(anyString())).thenReturn(Optional.of(url));
+        when(this.urlRepository.findByShortUrlAndDeletedFalse(anyString())).thenReturn(Optional.of(this.url));
 
-        UrlResponse response = urlService.getOriginalUrl(SHORT_URL);
+        final UrlResponse response = this.urlService.getOriginalUrl(UrlServiceTest.SHORT_URL);
 
         assertAll("Get Original URL",
-                () -> assertEquals(url.getOriginalUrl(), response.originalUrl()),
-                () -> assertEquals(url.getShortUrl(), response.shortUrl()),
-                () -> assertEquals(url.getAccessCount(), response.accessCount()));
+                () -> assertEquals(this.url.getOriginalUrl(), response.originalUrl()),
+                () -> assertEquals(this.url.getShortUrl(), response.shortUrl()),
+                () -> assertEquals(this.url.getAccessCount(), response.accessCount()));
     }
 
     @Test
     void testGetOriginalUrlNotFound() {
-        when(urlRepository.findByShortUrlAndDeletedFalse(anyString())).thenReturn(Optional.empty());
+        when(this.urlRepository.findByShortUrlAndDeletedFalse(anyString())).thenReturn(Optional.empty());
 
-        assertThrows(UrlNotFoundException.class, () -> urlService.getOriginalUrl(SHORT_URL));
+        assertThrows(UrlNotFoundException.class, () -> this.urlService.getOriginalUrl(UrlServiceTest.SHORT_URL));
     }
 
     @Test
     void testUpdateOriginalUrl() {
-        UrlRequest urlRequest = new UrlRequest(NEW_ORIGINAL_URL);
-        when(urlRepository.findByShortUrlAndDeletedFalse(anyString())).thenReturn(Optional.of(url));
+        final UrlRequest urlRequest = new UrlRequest(UrlServiceTest.NEW_ORIGINAL_URL);
+        when(this.urlRepository.findByShortUrlAndDeletedFalse(anyString())).thenReturn(Optional.of(this.url));
 
-        UrlResponse response = urlService.updateOriginalUrl(SHORT_URL, urlRequest);
+        final UrlResponse response = this.urlService.updateOriginalUrl(UrlServiceTest.SHORT_URL, urlRequest);
 
         assertAll("Update Original URL",
                 () -> assertEquals(urlRequest.url(), response.originalUrl()),
-                () -> assertEquals(url.getShortUrl(), response.shortUrl()));
+                () -> assertEquals(this.url.getShortUrl(), response.shortUrl()));
     }
 
     @Test
     void testUpdateOriginalUrlNotFound() {
-        UrlRequest urlRequest = new UrlRequest(NEW_ORIGINAL_URL);
-        when(urlRepository.findByShortUrlAndDeletedFalse(anyString())).thenReturn(Optional.empty());
+        final UrlRequest urlRequest = new UrlRequest(UrlServiceTest.NEW_ORIGINAL_URL);
+        when(this.urlRepository.findByShortUrlAndDeletedFalse(anyString())).thenReturn(Optional.empty());
 
         assertThrows(UrlNotFoundException.class,
-                () -> urlService.updateOriginalUrl(SHORT_URL, urlRequest));
+                () -> this.urlService.updateOriginalUrl(UrlServiceTest.SHORT_URL, urlRequest));
     }
 
     @Test
     void testDeleteUrl() {
-        when(urlRepository.findByShortUrlAndDeletedFalse(anyString())).thenReturn(Optional.of(url));
+        when(this.urlRepository.findByShortUrlAndDeletedFalse(anyString())).thenReturn(Optional.of(this.url));
 
-        urlService.deleteUrl(SHORT_URL);
+        this.urlService.deleteUrl(UrlServiceTest.SHORT_URL);
 
-        assertTrue(url.isDeleted());
+        assertTrue(this.url.isDeleted());
     }
 
     @Test
     void testDeleteUrlNotFound() {
-        when(urlRepository.findByShortUrlAndDeletedFalse(anyString())).thenReturn(Optional.empty());
+        when(this.urlRepository.findByShortUrlAndDeletedFalse(anyString())).thenReturn(Optional.empty());
 
-        assertThrows(UrlNotFoundException.class, () -> urlService.deleteUrl(SHORT_URL));
+        assertThrows(UrlNotFoundException.class, () -> this.urlService.deleteUrl(UrlServiceTest.SHORT_URL));
     }
 
     @Test
     void testGetUrlStats() {
-        when(urlRepository.findByShortUrlAndDeletedFalse(anyString())).thenReturn(Optional.of(url));
+        when(this.urlRepository.findByShortUrlAndDeletedFalse(anyString())).thenReturn(Optional.of(this.url));
 
-        UrlResponse response = urlService.getUrlStats(SHORT_URL);
+        final UrlResponse response = this.urlService.getUrlStats(UrlServiceTest.SHORT_URL);
 
-        assertAll("Get URL Stats", () -> assertEquals(url.getOriginalUrl(), response.originalUrl()),
-                () -> assertEquals(url.getShortUrl(), response.shortUrl()));
+        assertAll("Get URL Stats", () -> assertEquals(this.url.getOriginalUrl(), response.originalUrl()),
+                () -> assertEquals(this.url.getShortUrl(), response.shortUrl()));
     }
 
     @Test
     void testGetUrlStatsNotFound() {
-        when(urlRepository.findByShortUrlAndDeletedFalse(anyString())).thenReturn(Optional.empty());
+        when(this.urlRepository.findByShortUrlAndDeletedFalse(anyString())).thenReturn(Optional.empty());
 
-        assertThrows(UrlNotFoundException.class, () -> urlService.getUrlStats(SHORT_URL));
+        assertThrows(UrlNotFoundException.class, () -> this.urlService.getUrlStats(UrlServiceTest.SHORT_URL));
     }
 }

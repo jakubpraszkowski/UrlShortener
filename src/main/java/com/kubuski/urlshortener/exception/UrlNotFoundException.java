@@ -3,9 +3,9 @@ package com.kubuski.urlshortener.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value = HttpStatus.NOT_FOUND)
+@ResponseStatus(HttpStatus.NOT_FOUND)
 public class UrlNotFoundException extends RuntimeException {
-    public UrlNotFoundException(String message) {
+    public UrlNotFoundException(final String message) {
         super(message);
     }
 }
