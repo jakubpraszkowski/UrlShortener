@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -20,8 +21,10 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class JwtService {
 
-    private static final String SECRET_KEY = "Ub4fYssklK3rvQpno61AVzpxTASRYK1O";
-    private static final int EXPIRATION_MINUTES = 60 * 24;
+    private final int EXPIRATION_MINUTES = 60 * 24;
+
+    @Value("${jwt.secret}")
+    private String secretKey;
 
     public String extractEmail(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -45,7 +48,7 @@ public class JwtService {
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         Instant now = Instant.now();
-        Instant expiration = now.plus(JwtService.EXPIRATION_MINUTES, ChronoUnit.MINUTES);
+        Instant expiration = now.plus(EXPIRATION_MINUTES, ChronoUnit.MINUTES);
 
         return Jwts.builder().claims(extraClaims).subject(userDetails.getUsername())
                 .issuedAt(Date.from(now)).expiration(Date.from(expiration))
@@ -58,7 +61,7 @@ public class JwtService {
     }
 
     private SecretKey getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(JwtService.SECRET_KEY);
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
 
         return Keys.hmacShaKeyFor(keyBytes);
     }

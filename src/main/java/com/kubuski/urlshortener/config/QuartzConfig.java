@@ -9,9 +9,9 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 @Configuration
 public class QuartzConfig {
 
-    private static final String CRON_EXPRESSION = "0 0 0 * * ?";
-    private static final String JOB_NAME = "urlCleanupJob";
-    private static final String TRIGGER_NAME = "urlCleanupTrigger";
+    private final String CRON_EXPRESSION = "0 0 0 * * ?";
+    private final String JOB_NAME = "urlCleanupJob";
+    private final String TRIGGER_NAME = "urlCleanupTrigger";
 
     @Bean
     public JobDetail urlCleanupJobDetail() {

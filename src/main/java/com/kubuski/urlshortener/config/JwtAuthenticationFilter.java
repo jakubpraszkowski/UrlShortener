@@ -19,8 +19,8 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private static final String TOKEN_PREFIX = "Bearer ";
-    private static final String HEADER_TYPE = "Authorization";
+    private final String TOKEN_PREFIX = "Bearer ";
+    private final String HEADER_TYPE = "Authorization";
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
