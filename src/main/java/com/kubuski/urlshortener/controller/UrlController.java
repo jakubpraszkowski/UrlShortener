@@ -37,11 +37,12 @@ final class UrlController {
     @ResponseStatus(HttpStatus.OK)
     public UrlResponse getOriginalUrl(@PathVariable(name = "shortUrl") String shortUrl) {
         return urlService.getOriginalUrl(shortUrl);
-    } 
+    }
 
     @PutMapping("/{shortUrl}")
     @ResponseStatus(HttpStatus.OK)
-    public UrlResponse updateOriginalUrl(@PathVariable(name = "shortUrl") String shortUrl, @RequestBody UrlRequest urlRequest) {
+    public UrlResponse updateOriginalUrl(@PathVariable(name = "shortUrl") String shortUrl,
+            @RequestBody UrlRequest urlRequest) {
         return urlService.updateOriginalUrl(shortUrl, urlRequest);
     }
 
