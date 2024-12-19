@@ -4,7 +4,7 @@ WORKDIR /build
 
 COPY pom.xml .
 
-COPY src/main/resources/application.properties src/main/resources/
+COPY src/main/resources/application-online.properties src/main/resources/
 
 RUN --mount=type=cache,target=/root/.m2 mvn dependency:go-offline -DskipTests
 
