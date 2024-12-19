@@ -5,12 +5,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
+
+import com.kubuski.urlshortener.entity.User;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.userdetails.UserDetails;
 
 @ExtendWith(MockitoExtension.class)
 public class JwtServiceTest {
@@ -21,14 +22,14 @@ public class JwtServiceTest {
     private JwtService jwtService;
 
     @Mock
-    private UserDetails userDetails;
+    private User userDetails;
 
     private String token;
 
     @BeforeEach
     public void setUp() {
         jwtService = new JwtService();
-        when(userDetails.getUsername()).thenReturn(EXAMPLE_EMAIL);
+        when(userDetails.getEmail()).thenReturn(EXAMPLE_EMAIL);
         token = jwtService.generateToken(userDetails);
     }
 

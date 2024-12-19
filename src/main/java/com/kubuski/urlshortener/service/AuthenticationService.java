@@ -33,7 +33,7 @@ public class AuthenticationService {
     @Transactional
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticateUser(request);
-        User user = findUserByEmail(request.email());
+        User user = findUserByLogin(request.login());
         String jwtToken = jwtService.generateToken(user);
 
         return new AuthenticationResponse(jwtToken);
@@ -47,11 +47,11 @@ public class AuthenticationService {
 
     private void authenticateUser(AuthenticationRequest request) {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.email(), request.password()));
+                new UsernamePasswordAuthenticationToken(request.login(), request.password()));
     }
 
-    private User findUserByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+    private User findUserByLogin(String login) {
+        return userRepository.findByEmailOrUsername(login)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + login));
     }
 }

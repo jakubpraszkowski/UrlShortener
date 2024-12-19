@@ -14,7 +14,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class UrlCleanupJob extends QuartzJobBean {
-    private final int ENTITY_LIFETIME_DAYS = 5;
+    private static final int ENTITY_LIFETIME_DAYS = 5;
 
     private final UrlRepository urlRepository;
 
