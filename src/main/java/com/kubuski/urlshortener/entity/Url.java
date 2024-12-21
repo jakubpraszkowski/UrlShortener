@@ -1,45 +1,42 @@
 package com.kubuski.urlshortener.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
-import java.time.Instant;
-
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+
+import java.time.Instant;
 
 @Table(name = "urls")
 @Entity
 @Data
+@Builder
 public class Url {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, name = "original_url")
+    @Column(nullable = false)
     private String originalUrl;
 
-    @Column(unique = true, nullable = false, name = "short_url")
+    @Column(unique = true, nullable = false)
     private String shortUrl;
 
-    @Column(name = "created_at", updatable = false)
+    @Column(updatable = false)
     @CreatedDate
     private Instant createdAt;
 
-    @Column(name = "updated_at")
+    @Column
     @LastModifiedDate
     private Instant updatedAt;
 
-    @Column(name = "expiration_date")
+    @Column
     private Instant expirationDate;
 
-    @Column(name = "access_count")
+    @Column
     private int accessCount;
 
-    @Column(name = "deleted")
+    @Column
     private boolean deleted;
 }

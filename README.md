@@ -12,12 +12,13 @@ Url Shortener is a web application built with Spring Boot that allows users to c
 - Docker
 - PostgreSQL
 - Maven
+- JUnit 5
+- Mockito 2
+- 
 
 
 ## 3. Setup/Installation
 
 ### Prerequisites
 
-- Java 17
 - Docker engine
-- Maven
