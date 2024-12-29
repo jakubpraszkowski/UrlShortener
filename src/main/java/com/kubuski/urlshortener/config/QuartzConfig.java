@@ -1,30 +1,26 @@
 package com.kubuski.urlshortener.config;
 
-import org.quartz.CronScheduleBuilder;
-import org.quartz.JobBuilder;
-import org.quartz.JobDetail;
-import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
+import com.kubuski.urlshortener.job.UrlCleanupJob;
+import org.quartz.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
-import com.kubuski.urlshortener.job.UrlCleanupJob;
-
 @Configuration
 public class QuartzConfig {
 
+    private static final String CRON_EXPRESSION = "0 0 0 * * ?";
+    private static final String JOB_NAME = "urlCleanupJob";
+    private static final String TRIGGER_NAME = "urlCleanupTrigger";
+
     @Bean
     public JobDetail urlCleanupJobDetail() {
-        return JobBuilder.newJob(UrlCleanupJob.class).withIdentity("urlCleanupJob").storeDurably()
-                .build();
+        return createJobDetail(UrlCleanupJob.class, JOB_NAME);
     }
 
     @Bean
     public Trigger urlCleanupJobTrigger() {
-        return TriggerBuilder.newTrigger().forJob(urlCleanupJobDetail())
-                .withIdentity("urlCleanupTrigger")
-                .withSchedule(CronScheduleBuilder.cronSchedule("0 0 0 * * ?")).build();
+        return createTrigger(urlCleanupJobDetail(), TRIGGER_NAME, CRON_EXPRESSION);
     }
 
     @Bean
@@ -32,7 +28,15 @@ public class QuartzConfig {
         SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
         schedulerFactoryBean.setJobDetails(urlCleanupJobDetail());
         schedulerFactoryBean.setTriggers(urlCleanupJobTrigger());
-
         return schedulerFactoryBean;
+    }
+
+    private JobDetail createJobDetail(Class<? extends Job> jobClass, String jobName) {
+        return JobBuilder.newJob(jobClass).withIdentity(jobName).storeDurably().build();
+    }
+
+    private Trigger createTrigger(JobDetail jobDetail, String triggerName, String cronExpression) {
+        return TriggerBuilder.newTrigger().forJob(jobDetail).withIdentity(triggerName)
+                .withSchedule(CronScheduleBuilder.cronSchedule(cronExpression)).build();
     }
 }

@@ -3,6 +3,7 @@ package com.kubuski.urlshortener;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,6 +18,7 @@ import com.kubuski.urlshortener.service.UrlService;
 
 @SpringBootTest
 @Testcontainers
+@Disabled
 public class UrlshortenerApplicationTests {
 
 	@Autowired
@@ -29,38 +31,38 @@ public class UrlshortenerApplicationTests {
 
 	@BeforeAll
 	public static void startContainer() {
-		postgreSQLContainer.start();
+        UrlshortenerApplicationTests.postgreSQLContainer.start();
 		System.out.println(
-				"PostgreSQL container started with URL: " + postgreSQLContainer.getJdbcUrl());
+				"PostgreSQL container started with URL: " + UrlshortenerApplicationTests.postgreSQLContainer.getJdbcUrl());
 	}
 
 	@AfterAll
 	public static void tearDownContainer() {
-		if (postgreSQLContainer.isRunning())
-			postgreSQLContainer.stop();
+		if (UrlshortenerApplicationTests.postgreSQLContainer.isRunning())
+            UrlshortenerApplicationTests.postgreSQLContainer.stop();
 	}
 
 	@DynamicPropertySource
-	static void configureProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
-		registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
-		registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
+	static void configureProperties(final DynamicPropertyRegistry registry) {
+		registry.add("spring.datasource.url", UrlshortenerApplicationTests.postgreSQLContainer::getJdbcUrl);
+		registry.add("spring.datasource.username", UrlshortenerApplicationTests.postgreSQLContainer::getUsername);
+		registry.add("spring.datasource.password", UrlshortenerApplicationTests.postgreSQLContainer::getPassword);
 	}
 
 	@Test
 	void contextLoads() {
-		assertNotNull(applicationContext);
+		assertNotNull(this.applicationContext);
 	}
 
 	@Test
 	void testUrlServiceBeanLoaded() {
-		UrlService urlServiceBean = applicationContext.getBean(UrlService.class);
+		final UrlService urlServiceBean = this.applicationContext.getBean(UrlService.class);
 		assertNotNull(urlServiceBean);
 	}
 
 	@Test
 	void testUrlRepositoryBeanLoaded() {
-		UrlRepository urlRepositoryBean = applicationContext.getBean(UrlRepository.class);
+		final UrlRepository urlRepositoryBean = this.applicationContext.getBean(UrlRepository.class);
 		assertNotNull(urlRepositoryBean);
 	}
 

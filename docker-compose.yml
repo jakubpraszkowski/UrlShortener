@@ -8,8 +8,16 @@ services:
       - DATABASE_URL=jdbc:postgresql://java_db:5432/prod_db
       - DATABASE_USERNAME=postgres
       - DATABASE_PASSWORD=postgres
+      - SPRING_PROFILES_ACTIVE=online
     depends_on:
-      - java_db
+      java_db:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "https://localhost:8080/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
 
   java_db:
     container_name: java_db
@@ -22,6 +30,12 @@ services:
       POSTGRES_DB: prod_db
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
 volumes:
   pgdata: {}
