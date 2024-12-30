@@ -22,17 +22,13 @@ import java.util.function.Function;
 public class JwtService {
 
     private static final int EXPIRATION_MINUTES = 60 * 24;
-    private static final String email = "email";
+    private static final String EMAIL_CLAIM = "email";
 
     @Value("${jwt.secret}")
     private String secretKey;
 
-    private String extractSubject(String token) {
-        return extractClaim(token, Claims::getSubject);
-    }
-
     public String extractEmail(String token) {
-        return extractClaim(token, claims -> claims.get(email, String.class));
+        return extractClaim(token, claims -> claims.get(EMAIL_CLAIM, String.class));
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
@@ -45,9 +41,7 @@ public class JwtService {
         String subjectUsername = extractSubject(token);
         String email = extractEmail(token);
 
-        boolean equals = email.equals(userDetails.getEmail());
-        boolean equals2 = subjectUsername.equals(userDetails.getUsername());
-        return equals || equals2 && !isTokenExpired(token);
+        return email.equals(userDetails.getEmail()) && subjectUsername.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
     public String generateToken(User userDetails) {
@@ -59,24 +53,28 @@ public class JwtService {
         Instant expiration = now.plus(EXPIRATION_MINUTES, ChronoUnit.MINUTES);
 
         return Jwts.builder().claims(extraClaims).subject(userDetails.getUsername())
-                .claim(email, userDetails.getEmail()).issuedAt(Date.from(now))
+                .claim(EMAIL_CLAIM, userDetails.getEmail()).issuedAt(Date.from(now))
                 .expiration(Date.from(expiration)).signWith(getSignInKey(), Jwts.SIG.HS256)
                 .compact();
     }
 
-    private Claims extractAllClaims(String token) {
+    String extractSubject(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    Claims extractAllClaims(String token) {
         return Jwts.parser().verifyWith(getSignInKey()).build().parseSignedClaims(token)
                 .getPayload();
+    }
+
+    boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
     }
 
     private SecretKey getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
 
         return Keys.hmacShaKeyFor(keyBytes);
-    }
-
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
     }
 
     private Date extractExpiration(String token) {
