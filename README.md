@@ -14,7 +14,7 @@ Url Shortener is a web application built with Spring Boot that allows users to c
 
 1. Clone the repository:
    ```sh
-   git clone <repository-url>
+   git clone git@github.com:jakubpraszkowski/UrlShortener.git
    cd url-shortener
 
 2. Create a .env file in the root directory with the following content:
