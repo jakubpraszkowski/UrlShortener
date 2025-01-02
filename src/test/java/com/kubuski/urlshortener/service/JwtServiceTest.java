@@ -1,60 +1,84 @@
 package com.kubuski.urlshortener.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
-
 import com.kubuski.urlshortener.entity.User;
-import org.junit.Test;
+import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class JwtServiceTest {
+class JwtServiceTest {
 
-    private static final String EXAMPLE_EMAIL = "test@example.com";
+    private static final String SECRET_TEST_KEY = "1kp1Wv/9kfKl2Prat4lteX4T+DYR3bKcJ1BOy5sZrgg=";
+    private static final String USERNAME = "testuser";
+    private static final String EMAIL = "testuser@example.com";
 
-    // @InjectMocks
+    private String testToken;
+
+    @InjectMocks
     private JwtService jwtService;
 
     @Mock
-    private User userDetails;
-
-    private String token;
+    private User user;
 
     @BeforeEach
     public void setUp() {
-        jwtService = new JwtService();
-        when(userDetails.getEmail()).thenReturn(EXAMPLE_EMAIL);
-        token = jwtService.generateToken(userDetails);
+        ReflectionTestUtils.setField(jwtService, "secretKey", SECRET_TEST_KEY);
+
+        when(user.getUsername()).thenReturn(USERNAME);
+        when(user.getEmail()).thenReturn(EMAIL);
+
+        testToken = jwtService.generateToken(user);
     }
 
     @Test
-    public void testGenerateToken() {
-        assertNotNull(token);
+    void testExtractSubject() {
+        String subject = jwtService.extractSubject(testToken);
+
+        assertEquals(USERNAME, subject);
     }
 
     @Test
-    public void testIsTokenValid() {
-        String invalidToken = token + "invalid";
+    void testExtractEmail() {
+        String email = jwtService.extractEmail(testToken);
 
-        assertTrue(jwtService.isTokenValid(token, userDetails));
-        assertFalse(jwtService.isTokenValid(invalidToken, userDetails));
+        assertEquals(EMAIL, email);
     }
 
     @Test
-    public void testExtractEmail() {
-        String email = jwtService.extractEmail(token);
+    void testIsTokenValid() {
+        boolean validToken = jwtService.isTokenValid(testToken, user);
 
-        assertEquals(EXAMPLE_EMAIL, email);
+        assertTrue(validToken);
     }
 
-    // @Test
-    // public void testIsTokenExpired() {
-    //     assertFalse(jwtService.isTokenExpired(token));
-    // }
+    @Test
+    void testGenerateToken() {
+        String token = jwtService.generateToken(user);
+
+        assertAll("Generate JWT", () -> assertEquals(USERNAME, jwtService.extractSubject(token)),
+                () -> assertEquals(EMAIL, jwtService.extractEmail(token)));
+    }
+
+    @Test
+    void testExtractAllClaims() {
+        Claims claims = jwtService.extractAllClaims(testToken);
+
+        assertAll("Extract JWT claims", () -> assertEquals(USERNAME, claims.getSubject()),
+                () -> assertEquals(EMAIL, claims.get("email", String.class)));
+    }
+
+    @Test
+    void testIsTokenExpired() {
+        boolean tokenStatus = jwtService.isTokenExpired(testToken);
+
+        assertFalse(tokenStatus);
+    }
 }
