@@ -17,6 +17,7 @@ public class UrlService {
 
     private final UrlRepository urlRepository;
 
+    @Transactional
     public UrlResponse createShortUrl(UrlRequest urlRequest) {
         Url url = buildUrl(urlRequest);
         Url savedUrl = urlRepository.save(url);
