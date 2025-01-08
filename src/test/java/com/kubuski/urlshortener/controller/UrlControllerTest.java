@@ -1,21 +1,21 @@
 package com.kubuski.urlshortener.controller;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
-
+import com.kubuski.urlshortener.dto.UrlRequest;
+import com.kubuski.urlshortener.dto.UrlResponse;
+import com.kubuski.urlshortener.service.UrlService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import com.kubuski.urlshortener.dto.UrlRequest;
-import com.kubuski.urlshortener.dto.UrlResponse;
-import com.kubuski.urlshortener.service.UrlService;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class UrlControllerTest {
@@ -35,39 +35,39 @@ public class UrlControllerTest {
 
     @BeforeEach
     public void setUp() {
-        this.urlResponse = new UrlResponse(1L, UrlControllerTest.ORIGINAL_URL, UrlControllerTest.SHORT_URL, null, null, null, 0);
-        this.urlRequest = new UrlRequest(UrlControllerTest.ORIGINAL_URL);
+        urlResponse = new UrlResponse(1L, ORIGINAL_URL, SHORT_URL, null, null, null, 0);
+        urlRequest = new UrlRequest(ORIGINAL_URL);
     }
 
     @Test
     public void testCreateShortUrl() {
-        when(this.urlService.createShortUrl(any(UrlRequest.class))).thenReturn(this.urlResponse);
+        when(urlService.createShortUrl(any(UrlRequest.class))).thenReturn(urlResponse);
 
-        final UrlResponse response = this.urlController.createShortUrl(this.urlRequest);
+        UrlResponse response = urlController.createShortUrl(urlRequest);
 
-        assertAll(() -> assertEquals(this.urlRequest.url(), response.originalUrl()),
-                () -> assertEquals(this.urlResponse.shortUrl(), response.shortUrl()));
+        assertAll(() -> assertEquals(urlRequest.url(), response.originalUrl()),
+                () -> assertEquals(urlResponse.shortUrl(), response.shortUrl()));
     }
 
     @Test
     public void testGetOriginalUrl() {
-        when(this.urlService.getOriginalUrl(anyString())).thenReturn(this.urlResponse);
+        when(urlService.getOriginalUrl(anyString())).thenReturn(urlResponse);
 
-        final UrlResponse response = this.urlController.getOriginalUrl(UrlControllerTest.SHORT_URL);
+        UrlResponse response = urlController.getOriginalUrl(SHORT_URL);
 
-        assertAll(() -> assertEquals(this.urlResponse.originalUrl(), response.originalUrl()),
-                () -> assertEquals(this.urlResponse.shortUrl(), response.shortUrl()));
+        assertAll(() -> assertEquals(urlResponse.originalUrl(), response.originalUrl()),
+                () -> assertEquals(urlResponse.shortUrl(), response.shortUrl()));
     }
 
     @Test
     public void testUpdateOriginalUrl() {
-        final UrlRequest newUrlRequest = new UrlRequest(UrlControllerTest.NEW_URL);
-        final UrlResponse updatedUrlResponse =
-                new UrlResponse(1L, UrlControllerTest.NEW_URL, UrlControllerTest.SHORT_URL, null, null, null, 0);
-        when(this.urlService.updateOriginalUrl(any(String.class), any(UrlRequest.class)))
+        UrlRequest newUrlRequest = new UrlRequest(NEW_URL);
+        UrlResponse updatedUrlResponse =
+                new UrlResponse(1L, NEW_URL, SHORT_URL, null, null, null, 0);
+        when(urlService.updateOriginalUrl(any(String.class), any(UrlRequest.class)))
                 .thenReturn(updatedUrlResponse);
 
-        final UrlResponse response = this.urlController.updateOriginalUrl(UrlControllerTest.SHORT_URL, newUrlRequest);
+        UrlResponse response = urlController.updateOriginalUrl(SHORT_URL, newUrlRequest);
 
         assertAll(() -> assertEquals(updatedUrlResponse.shortUrl(), response.shortUrl()),
                 () -> assertEquals(newUrlRequest.url(), response.originalUrl()));
@@ -75,18 +75,18 @@ public class UrlControllerTest {
 
     @Test
     public void testDeleteUrl() {
-        doNothing().when(this.urlService).deleteUrl(UrlControllerTest.SHORT_URL);
+        doNothing().when(urlService).deleteUrl(SHORT_URL);
 
-        this.urlController.deleteUrl(UrlControllerTest.SHORT_URL);
+        urlController.deleteUrl(SHORT_URL);
     }
 
     @Test
     public void testGetStatsUrl() {
-        when(this.urlService.getUrlStats(UrlControllerTest.SHORT_URL)).thenReturn(this.urlResponse);
+        when(urlService.getUrlStats(SHORT_URL)).thenReturn(urlResponse);
 
-        final UrlResponse response = this.urlController.getUrlStats(UrlControllerTest.SHORT_URL);
+        UrlResponse response = urlController.getUrlStats(SHORT_URL);
 
-        assertAll(() -> assertEquals(this.urlResponse.originalUrl(), response.originalUrl()),
-                () -> assertEquals(this.urlResponse.shortUrl(), response.shortUrl()));
+        assertAll(() -> assertEquals(urlResponse.originalUrl(), response.originalUrl()),
+                () -> assertEquals(urlResponse.shortUrl(), response.shortUrl()));
     }
 }

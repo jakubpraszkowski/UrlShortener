@@ -1,5 +1,6 @@
 package com.kubuski.urlshortener.service;
 
+import com.kubuski.urlshortener.exception.UserAlreadyExistsException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,7 +23,10 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
+    @Transactional
     public AuthenticationResponse register(RegisterRequest request) {
+        checkIfUserExists(request.email(), request.username());
+
         User user = createUser(request);
         userRepository.save(user);
         String jwtToken = jwtService.generateToken(user);
@@ -53,5 +57,11 @@ public class AuthenticationService {
     private User findUserByLogin(String login) {
         return userRepository.findByEmailOrUsername(login)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + login));
+    }
+
+    private void checkIfUserExists(String email, String username) {
+        if (userRepository.findByEmailOrUsername(email).isPresent() || userRepository.findByEmailOrUsername(username).isPresent()) {
+            throw new UserAlreadyExistsException("User with email " + email + " or username " + username + " already exists");
+        }
     }
 }
