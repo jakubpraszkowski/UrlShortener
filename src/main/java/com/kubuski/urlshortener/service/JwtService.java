@@ -41,7 +41,9 @@ public class JwtService {
         String subjectUsername = extractSubject(token);
         String email = extractEmail(token);
 
-        return email.equals(userDetails.getEmail()) && subjectUsername.equals(userDetails.getUsername()) && !isTokenExpired(token);
+        return email.equals(userDetails.getEmail()) &&
+                subjectUsername.equals(userDetails.getUsername()) &&
+                !isTokenExpired(token);
     }
 
     public String generateToken(User userDetails) {
