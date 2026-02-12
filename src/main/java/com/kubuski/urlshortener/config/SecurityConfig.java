@@ -45,7 +45,8 @@ public class SecurityConfig {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(SHORTEN_PERMIT_PATHS).hasAnyRole(String.valueOf(Roles.USER), String.valueOf(Roles.ADMIN))
+                        .requestMatchers(SHORTEN_PERMIT_PATHS)
+                        .hasAnyRole(String.valueOf(Roles.USER), String.valueOf(Roles.ADMIN))
                         .requestMatchers(SWAGGER_UI_PATHS).permitAll()
                         .requestMatchers(USER_PERMIT_PATHS).hasRole(String.valueOf(Roles.ADMIN))
                         .requestMatchers(URL_PERMIT_PATHS).hasRole(String.valueOf(Roles.USER))

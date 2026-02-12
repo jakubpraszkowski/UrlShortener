@@ -1,18 +1,18 @@
 package com.kubuski.urlshortener.service;
 
+import com.kubuski.urlshortener.dto.AuthenticationRequest;
+import com.kubuski.urlshortener.dto.AuthenticationResponse;
+import com.kubuski.urlshortener.dto.RegisterRequest;
+import com.kubuski.urlshortener.entity.User;
 import com.kubuski.urlshortener.exception.UserAlreadyExistsException;
+import com.kubuski.urlshortener.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.kubuski.urlshortener.dto.AuthenticationRequest;
-import com.kubuski.urlshortener.dto.AuthenticationResponse;
-import com.kubuski.urlshortener.dto.RegisterRequest;
-import com.kubuski.urlshortener.entity.User;
-import com.kubuski.urlshortener.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -60,8 +60,15 @@ public class AuthenticationService {
     }
 
     private void checkIfUserExists(String email, String username) {
-        if (userRepository.findByEmailOrUsername(email).isPresent() || userRepository.findByEmailOrUsername(username).isPresent()) {
-            throw new UserAlreadyExistsException("User with email " + email + " or username " + username + " already exists");
+        if (userExists(email, username)) {
+            throw new UserAlreadyExistsException(
+                    "User with email " + email + " or username " + username + " already exists"
+            );
         }
+    }
+
+    private boolean userExists(String email, String username) {
+        return userRepository.findByEmailOrUsername(email).isPresent()
+                || userRepository.findByEmailOrUsername(username).isPresent();
     }
 }
