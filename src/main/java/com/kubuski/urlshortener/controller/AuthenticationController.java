@@ -1,5 +1,6 @@
 package com.kubuski.urlshortener.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,13 +22,13 @@ final class AuthenticationController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public AuthenticationResponse register(@RequestBody RegisterRequest request) {
+    public AuthenticationResponse register(@Valid @RequestBody RegisterRequest request) {
         return authenticationService.register(request);
     }
 
     @PostMapping("/authenticate")
     @ResponseStatus(HttpStatus.OK)
-    public AuthenticationResponse authenticate(@RequestBody AuthenticationRequest request) {
+    public AuthenticationResponse authenticate(@Valid @RequestBody AuthenticationRequest request) {
         return authenticationService.authenticate(request);
     }
 }

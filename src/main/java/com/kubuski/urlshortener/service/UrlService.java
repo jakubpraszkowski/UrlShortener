@@ -4,6 +4,7 @@ import com.kubuski.urlshortener.dto.UrlRequest;
 import com.kubuski.urlshortener.dto.UrlResponse;
 import com.kubuski.urlshortener.entity.Url;
 import com.kubuski.urlshortener.exception.UrlNotFoundException;
+import com.kubuski.urlshortener.mapper.EntityMapper;
 import com.kubuski.urlshortener.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ public class UrlService {
         Url url = buildUrl(urlRequest);
         Url savedUrl = urlRepository.save(url);
 
-        return toUrlResponse(savedUrl);
+        return EntityMapper.toUrlResponse(savedUrl);
     }
 
     @Transactional
@@ -30,7 +31,7 @@ public class UrlService {
         Url url = findUrlByShortUrl(shortUrl);
         incrementAccessCount(url);
 
-        return toUrlResponse(url);
+        return EntityMapper.toUrlResponse(url);
     }
 
     @Transactional
@@ -38,7 +39,7 @@ public class UrlService {
         Url url = findUrlByShortUrl(shortUrl);
         updateUrl(url, urlRequest);
 
-        return toUrlResponse(url);
+        return EntityMapper.toUrlResponse(url);
     }
 
     @Transactional
@@ -51,7 +52,7 @@ public class UrlService {
     public UrlResponse getUrlStats(String shortUrl) {
         Url url = findUrlByShortUrl(shortUrl);
 
-        return toUrlResponse(url);
+        return EntityMapper.toUrlResponse(url);
     }
 
     private Url buildUrl(UrlRequest urlRequest) {
@@ -79,11 +80,5 @@ public class UrlService {
 
     private String generateShortCode() {
         return UUID.randomUUID().toString().substring(0, 8);
-    }
-
-    private UrlResponse toUrlResponse(Url url) {
-        return new UrlResponse(url.getId(), url.getOriginalUrl(), url.getShortUrl(),
-                url.getCreatedAt(), url.getUpdatedAt(), url.getExpirationDate(),
-                url.getAccessCount());
     }
 }

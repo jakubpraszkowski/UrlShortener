@@ -63,7 +63,7 @@ public class AuthenticationServiceTest {
     public void testRegisterUserAlreadyExists() {
         RegisterRequest request = new RegisterRequest("testuser", "testpassword", "testuser@example.com", Roles.USER);
 
-        when(userRepository.findByEmailOrUsername(request.email())).thenReturn(Optional.of(user));
+        when(userRepository.existsByEmailOrUsername(request.email(), request.username())).thenReturn(true);
 
         assertThrows(UserAlreadyExistsException.class, () -> {
             authenticationService.register(request);
