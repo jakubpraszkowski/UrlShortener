@@ -32,7 +32,7 @@ class UrlController {
     @PutMapping("/{shortUrl}")
     @ResponseStatus(HttpStatus.OK)
     public UrlResponse updateOriginalUrl(@PathVariable String shortUrl,
-            @RequestBody UrlRequest urlRequest) {
+            @Valid @RequestBody UrlRequest urlRequest) {
         return urlService.updateOriginalUrl(shortUrl, urlRequest);
     }
 

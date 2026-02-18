@@ -68,7 +68,6 @@ public class AuthenticationService {
     }
 
     private boolean userExists(String email, String username) {
-        return userRepository.findByEmailOrUsername(email).isPresent()
-                || userRepository.findByEmailOrUsername(username).isPresent();
+        return userRepository.existsByEmailOrUsername(email, username);
     }
 }

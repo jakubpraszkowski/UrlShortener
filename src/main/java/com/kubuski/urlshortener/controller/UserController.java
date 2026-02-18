@@ -3,6 +3,7 @@ package com.kubuski.urlshortener.controller;
 import com.kubuski.urlshortener.dto.UserRequest;
 import com.kubuski.urlshortener.dto.UserResponse;
 import com.kubuski.urlshortener.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,7 +25,7 @@ class UserController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponse registerUser(@RequestBody UserRequest userRequest) {
+    public UserResponse registerUser(@Valid @RequestBody UserRequest userRequest) {
         return userService.registerUser(userRequest);
     }
 }

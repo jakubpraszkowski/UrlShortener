@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UrlRepository extends JpaRepository<Url, Long> {
-    Optional<Url> findById(Long id);
-
     Optional<Url> findByShortUrlAndDeletedFalse(String shortUrl);
 
     List<Url> findAllByDeletedTrueAndUpdatedAtBefore(Instant cutoffDate);
