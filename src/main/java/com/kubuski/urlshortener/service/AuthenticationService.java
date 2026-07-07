@@ -34,7 +34,6 @@ public class AuthenticationService {
         return new AuthenticationResponse(jwtToken);
     }
 
-    @Transactional
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticateUser(request);
         User user = findUserByLogin(request.login());

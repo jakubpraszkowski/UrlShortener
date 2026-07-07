@@ -4,7 +4,7 @@ import com.kubuski.urlshortener.dto.UserRequest;
 import com.kubuski.urlshortener.dto.UserResponse;
 import com.kubuski.urlshortener.entity.User;
 import com.kubuski.urlshortener.exception.UserNotFoundException;
-import com.kubuski.urlshortener.mapper.EntityMapper;
+import com.kubuski.urlshortener.mapper.UserMapper;
 import com.kubuski.urlshortener.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,15 +23,16 @@ public class UserService {
         User user = userRepository.findByEmail(email).orElseThrow(
                 () -> new UserNotFoundException("User " + email + " not found in Database"));
 
-        return EntityMapper.toUserResponse(user);
+        return UserMapper.toUserResponse(user);
     }
 
+    @Transactional
     public UserResponse registerUser(UserRequest userRequest) {
         User user = toUser(userRequest);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
 
-        return EntityMapper.toUserResponse(user);
+        return UserMapper.toUserResponse(user);
     }
 
     private User toUser(UserRequest userRequest) {

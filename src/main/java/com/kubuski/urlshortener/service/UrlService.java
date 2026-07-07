@@ -4,7 +4,7 @@ import com.kubuski.urlshortener.dto.UrlRequest;
 import com.kubuski.urlshortener.dto.UrlResponse;
 import com.kubuski.urlshortener.entity.Url;
 import com.kubuski.urlshortener.exception.UrlNotFoundException;
-import com.kubuski.urlshortener.mapper.EntityMapper;
+import com.kubuski.urlshortener.mapper.UserMapper;
 import com.kubuski.urlshortener.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ public class UrlService {
         Url url = buildUrl(urlRequest);
         Url savedUrl = urlRepository.save(url);
 
-        return EntityMapper.toUrlResponse(savedUrl);
+        return UserMapper.toUrlResponse(savedUrl);
     }
 
     @Transactional
@@ -31,7 +31,7 @@ public class UrlService {
         Url url = findUrlByShortUrl(shortUrl);
         incrementAccessCount(url);
 
-        return EntityMapper.toUrlResponse(url);
+        return UserMapper.toUrlResponse(url);
     }
 
     @Transactional
@@ -39,7 +39,7 @@ public class UrlService {
         Url url = findUrlByShortUrl(shortUrl);
         updateUrl(url, urlRequest);
 
-        return EntityMapper.toUrlResponse(url);
+        return UserMapper.toUrlResponse(url);
     }
 
     @Transactional
@@ -52,7 +52,7 @@ public class UrlService {
     public UrlResponse getUrlStats(String shortUrl) {
         Url url = findUrlByShortUrl(shortUrl);
 
-        return EntityMapper.toUrlResponse(url);
+        return UserMapper.toUrlResponse(url);
     }
 
     private Url buildUrl(UrlRequest urlRequest) {

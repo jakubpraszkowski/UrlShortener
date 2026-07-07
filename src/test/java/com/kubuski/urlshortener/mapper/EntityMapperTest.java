@@ -9,7 +9,8 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test class for EntityMapper utility.
@@ -26,7 +27,7 @@ public class EntityMapperTest {
                 .password("hashedPassword")
                 .build();
 
-        UserResponse response = EntityMapper.toUserResponse(user);
+        UserResponse response = UserMapper.toUserResponse(user);
 
         assertAll(
                 () -> assertEquals(user.getId(), response.id()),
@@ -50,7 +51,7 @@ public class EntityMapperTest {
                 .deleted(false)
                 .build();
 
-        UrlResponse response = EntityMapper.toUrlResponse(url);
+        UrlResponse response = UserMapper.toUrlResponse(url);
 
         assertAll(
                 () -> assertEquals(url.getId(), response.id()),
