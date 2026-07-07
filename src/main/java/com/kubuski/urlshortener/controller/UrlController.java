@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/shorten")
 @PreAuthorize("hasRole('USER')")
-class UrlController {
+final class UrlController {
 
     private final UrlService urlService;
 

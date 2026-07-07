@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.quartz.JobExecutionContext;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -19,6 +20,7 @@ public class UrlCleanupJob extends QuartzJobBean {
     private final UrlRepository urlRepository;
 
     @Override
+    @Transactional
     protected void executeInternal(final JobExecutionContext context) {
         Instant cutoffDate = calculateCutoffDate();
         List<Url> urlsToDelete = findUrlsToDelete(cutoffDate);
